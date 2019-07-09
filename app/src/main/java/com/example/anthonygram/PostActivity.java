@@ -1,5 +1,6 @@
 package com.example.anthonygram;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -26,6 +27,7 @@ public class PostActivity extends AppCompatActivity {
     private EditText etDescription;
     private Button btnCreate;
     private Button btnRefresh;
+    private Button btnProfile;
 
 //    public final String APP_TAG = "MyCustomApp";
 //    public final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
@@ -52,6 +54,15 @@ public class PostActivity extends AppCompatActivity {
         etDescription = findViewById(R.id.etDescription);
         btnCreate = findViewById(R.id.btnCreate);
         btnRefresh = findViewById(R.id.btnRefresh);
+        btnProfile = findViewById(R.id.btnProfile);
+
+        btnProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PostActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
 
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override

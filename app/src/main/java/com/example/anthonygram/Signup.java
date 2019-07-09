@@ -80,11 +80,11 @@ public class Signup extends AppCompatActivity {
     private boolean samePassword(String password1, String password2) {
 
         if (!password1.equals(password2)) {
-            Toast.makeText(this, "The passwords don't match", Toast.LENGTH_LONG);
+            Toast.makeText(Signup.this, "The passwords don't match", Toast.LENGTH_LONG).show();
             return false;
         }
         if (password1.length() <= 0) {
-            Toast.makeText(this, "The password mustn't be empty", Toast.LENGTH_LONG);
+            Toast.makeText(Signup.this, "The password mustn't be empty", Toast.LENGTH_LONG).show();
             return false;
         }
         return true;
