@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AnthonyGram</string>
+    <string name="passHint">Password</string>
+    <string name="userHint">Username</string>
+    <string name="loginName">Login</string>
+    <string name="title_activity_home">HomeActivity</string>
+</resources>
