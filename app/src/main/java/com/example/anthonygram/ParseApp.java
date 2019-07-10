@@ -23,9 +23,7 @@ public class ParseApp extends Application {
 
         Parse.initialize(config);
 
-        ParseObject testObject = new ParseObject("TestObject");
-        testObject.put("foo", "bar");
-        testObject.saveInBackground();
+
     }
 
 }

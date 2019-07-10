@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void goToMain() {
-        Intent intent = new Intent(LoginActivity.this, PostActivity.class);
+        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
         startActivity(intent);
         finish();
 
@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
             public void done(ParseUser user, ParseException e) {
                 if (e == null) {
                     Log.d("Login Activity", "Login successful");
-                    final Intent intent = new Intent(LoginActivity.this, PostActivity.class);
+                    final Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
