@@ -47,6 +47,9 @@ Please list two areas of the assignment you'd like to **discuss further with you
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
+google drive link
+
+https://drive.google.com/file/d/1mf75rHg1Tpb2UbhDc2UpQ4qJT7PhJXj4/view?usp=sharing
 
 <img src='https://drive.google.com/file/d/1mf75rHg1Tpb2UbhDc2UpQ4qJT7PhJXj4/view?usp=sharing' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
