@@ -2,6 +2,7 @@ package com.example.anthonygram.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.anthonygram.HomeActivity;
@@ -30,6 +32,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.io.File;
+import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -39,12 +42,17 @@ public class PostFragment extends Fragment {
 
     private Button btnCreate;
     private Button btnCamera;
+    private Button btnGallery;
     private EditText etDescription;
     private ImageView ivPostImage;
+    private ProgressBar pbLoading;
+
+    View.OnClickListener btnCreateListener;
 
     Context context;
 
     public final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
+    public final static int PICK_PHOTO_CODE = 1046;
     public String photoFileName = "photo.jpg";
     private File photoFile;
 
@@ -65,8 +73,11 @@ public class PostFragment extends Fragment {
 
         btnCreate = view.findViewById(R.id.btnCreate);
         btnCamera = view.findViewById(R.id.btnCamera);
+        btnGallery = view.findViewById(R.id.btnGallery);
         etDescription = view.findViewById(R.id.etDescription);
         ivPostImage = view.findViewById(R.id.ivPostImage);
+        pbLoading = view.findViewById(R.id.pbLoading);
+
 
         context = getContext();
 
@@ -76,10 +87,14 @@ public class PostFragment extends Fragment {
                 onLaunchCamera(v);
             }
         });
-
-        btnCreate.setOnClickListener(new View.OnClickListener() {
+        btnCreateListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (photoFile == null) {
+                    Toast.makeText(context, "Add an image", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
                 final String description = etDescription.getText().toString();
                 final ParseUser user = ParseUser.getCurrentUser();
 
@@ -87,8 +102,33 @@ public class PostFragment extends Fragment {
 
                 createPost(description, parseFile, user);
             }
+        };
+
+        btnCreate.setOnClickListener(btnCreateListener);
+
+        btnGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onPickPhoto(v);
+            }
         });
     }
+
+    public void onPickPhoto(View view) {
+        // Create intent for picking a photo from the gallery
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+
+        // If you call startActivityForResult() using an intent that no app can handle, your app will crash.
+        // So as long as the result is not null, it's safe to use the intent.
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            // Bring up gallery to select a photo
+            startActivityForResult(intent, PICK_PHOTO_CODE);
+//            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoFile);
+        }
+    }
+
     public void onLaunchCamera(View view) {
         // create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -131,13 +171,35 @@ public class PostFragment extends Fragment {
             if (resultCode == RESULT_OK) {
                 // by this point we have the camera photo on disk
                 Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                // -TODO RESIZE BITMAP, see section below
                 // Load the taken image into a preview
+                Bitmap bMapScaled = Bitmap.createScaledBitmap(takenImage, 150, 100, true);
 
-                ivPostImage.setImageBitmap(takenImage);
+                ivPostImage.setImageBitmap(bMapScaled);
                 ivPostImage.setVisibility(View.VISIBLE);
             } else { // Result was a failure
                 Toast.makeText(context, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (requestCode == PICK_PHOTO_CODE) {
+            if (resultCode == RESULT_OK && data != null) {
+                Uri photoUri = data.getData();
+
+                // Do something with the photo based on Uri
+
+                Bitmap takenImage = null;
+                try {
+                    takenImage = MediaStore.Images.Media.getBitmap(context.getContentResolver(), photoUri);
+                    photoFile = new File(getRealPathFromURI(context, photoUri));
+
+                    // Load the taken image into a preview
+                    Bitmap bMapScaled = Bitmap.createScaledBitmap(takenImage, 150, 100, true);
+                    ivPostImage.setImageBitmap(bMapScaled);
+                    ivPostImage.setVisibility(View.VISIBLE);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
             }
         }
     }
@@ -160,7 +222,28 @@ public class PostFragment extends Fragment {
                 } else {
                     e.printStackTrace();
                 }
+                pbLoading.setVisibility(View.INVISIBLE);
+                btnCreate.setOnClickListener(btnCreateListener);
             }
         });
+        pbLoading.setVisibility(View.VISIBLE);
+        btnCreate.setOnClickListener(null);
     }
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+
+
 }
